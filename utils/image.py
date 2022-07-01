@@ -22,9 +22,9 @@ def get_hist(gray_img: np.ndarray, hist_w: int, hist_h: int) -> np.ndarray:
     hist_img = np.zeros((hist_h, hist_w, 3), dtype=np.uint8)
 
     for i in range(0, 256):
-        # cv2.line(hist_img, (bin_w * (i - 1), hist_h - int(hist[i - 1])),
-        #         (bin_w * i, hist_h - int(hist[i])),
-        #         (0, 0, 255), thickness=1)
-        cv2.rectangle(hist_img, (int(i * bin_w), hist_h - int(hist[i][0])), (int(i * bin_w + bin_w - 1), hist_h),
-                      (0, 0, 255), -1)
+        cv2.line(hist_img, (bin_w * (i - 1), hist_h - int(hist[i - 1])),
+                 (bin_w * i, hist_h - int(hist[i])),
+                 (0, 0, 255), thickness=1)
+        #cv2.rectangle(hist_img, (int(i * bin_w), hist_h - int(hist[i][0])), (int(i * bin_w + bin_w - 1), hist_h),
+        #              (0, 0, 255), -1)
     return hist_img
