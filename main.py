@@ -16,7 +16,7 @@ def set_image(frame: QtWidgets.QLabel, img: np.ndarray) -> None:
 
 class App(QtWidgets.QWidget):
     video = 'video.mp4'
-    slider_resolution = 100
+    slider_resolution = 60
     frame_width = 640
     frame_height = int(frame_width / get_video_aspect_ratio(video))
     hist_width = 256 * 3
