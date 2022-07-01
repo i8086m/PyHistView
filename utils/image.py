@@ -3,7 +3,7 @@ import numpy as np
 
 
 def resize_image(img: np.ndarray, x: int, y: int) -> np.ndarray:
-    return cv2.resize(img, (x, y), interpolation=cv2.THRESH_BINARY)
+    return cv2.resize(img, (x, y))  # interpolation=cv2.THRESH_BINARY
 
 
 def bgr2gray(img: np.ndarray) -> np.ndarray:
