@@ -1,11 +1,11 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtWidgets import QSlider, QHBoxLayout, QPushButton, QVBoxLayout, QRadioButton, QLabel, QButtonGroup, \
     QPlainTextEdit
 from PyQt5 import QtGui, QtWidgets
 
 import sys
 
-from classes.QtThread import QtThread
+from classes.QtTask import QtTask
 from utils.video import *
 from utils.image import *
 
@@ -16,6 +16,8 @@ def set_image(frame: QtWidgets.QLabel, img: np.ndarray) -> None:
 
 
 class App(QtWidgets.QWidget):
+    thread_pool = QThreadPool.globalInstance()
+
     video = 'video.mp4'
     slider_resolution = 60
     frame_width = 640
@@ -45,12 +47,13 @@ class App(QtWidgets.QWidget):
         )
         set_image(self.image_hist_frame, self.hist_img)
 
+
     def edit_theme(self, style: str = None, color: str = None):
         if style:
             self.hist_style = style
         if color:
             self.hist_color = color
-        self.show_image()  # update the histogram
+        self.thread_pool.start(QtTask(self.show_image))  # update the histogram
 
     def export_grayscale(self, mode: int = 0):
         img = self.gray_img
@@ -75,8 +78,6 @@ class App(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(App, self).__init__(parent)
         self.setWindowTitle('PyHistogramViewer [MAI]')
-
-        self.image_thread = QtThread(target=self.show_image)
 
         hbox = QHBoxLayout()
         self.image_frame = QtWidgets.QLabel()
@@ -147,7 +148,7 @@ class App(QtWidgets.QWidget):
         self.slider.setMinimum(0)
         self.slider.setMaximum(get_video_duration(self.video) * self.slider_resolution)
 
-        self.slider.valueChanged.connect(lambda: self.image_thread.start())
+        self.slider.valueChanged.connect(lambda: self.thread_pool.start(QtTask(self.show_image)))
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addLayout(hbox)
@@ -157,7 +158,7 @@ class App(QtWidgets.QWidget):
 
         self.setLayout(self.layout)
 
-        self.show_image()
+        self.thread_pool.globalInstance().start(QtTask(self.show_image))
 
 
 if __name__ == '__main__':
