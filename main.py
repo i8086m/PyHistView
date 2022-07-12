@@ -30,6 +30,9 @@ class App(QtWidgets.QWidget):
     gray_img = None
     hist_img = None
 
+    last_saved_image_id = 0
+    last_exported_image_id = 0
+
     def show_image(self):
         frame = frame_from_video(self.video, self.slider.value() / self.slider_resolution)
 
@@ -48,7 +51,6 @@ class App(QtWidgets.QWidget):
         )
         set_image(self.image_hist_frame, self.hist_img)
 
-
     def edit_theme(self, style: str = None, color: str = None):
         if style:
             self.hist_style = style
@@ -61,21 +63,23 @@ class App(QtWidgets.QWidget):
         rows, cols = img.shape
 
         if mode == 0:  # as Bytes
-            with open('output/exported.txt', 'wb') as file:
+            with open('output/exported_{}.txt'.format(self.last_exported_image_id), 'wb') as file:
                 file.write(img.tobytes())
         elif mode == 1:  # as Numbers
-            with open('output/exported.txt', 'w') as file:
+            with open('output/exported_{}.txt'.format(self.last_exported_image_id), 'w') as file:
                 for y in range(rows):
                     file.write(' '.join([str(img[y, x]) for x in range(cols)]) + '\n')
         else:
             raise ValueError('Invalid export mode')
+        self.last_exported_image_id += 1
         self.log.appendPlainText('Изображение экспортировано')
 
     def save_hist(self):
         if self.hist_img is not None:
-            cv2.imwrite('output/saved_hist.png', self.hist_img)
+            cv2.imwrite('output/saved_{}_hist.png'.format(self.last_saved_image_id), self.hist_img)
         if self.img is not None:
-            cv2.imwrite('output/saved_frame.png', self.img)
+            cv2.imwrite('output/saved_{}_frame.png'.format(self.last_saved_image_id), self.img)
+        self.last_saved_image_id += 1
         self.log.appendPlainText('Гистограмма сохранена')
 
     def __init__(self, parent=None):
