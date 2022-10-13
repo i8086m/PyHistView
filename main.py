@@ -25,6 +25,7 @@ class App(QtWidgets.QWidget):
 
     hist_width = 256 * 3
     hist_color = 'red'
+    hist_thickness = 1
     hist_style = 'default'
     img = None
     gray_img = None
@@ -48,14 +49,17 @@ class App(QtWidgets.QWidget):
             self.frame_height,
             style=self.hist_style,
             color=self.hist_color,
+            thick=self.hist_thickness,
         )
         set_image(self.image_hist_frame, self.hist_img)
 
-    def edit_theme(self, style: str = None, color: str = None):
+    def edit_theme(self, style: str = None, color: str = None, thickness: int = None):
         if style:
             self.hist_style = style
         if color:
             self.hist_color = color
+        if thickness:
+            self.hist_thickness = thickness
         self.thread_pool.start(QtTask(self.show_image))  # update the histogram
 
     def export_grayscale(self, mode: int = 0):
@@ -101,6 +105,7 @@ class App(QtWidgets.QWidget):
         vbox_left = QVBoxLayout()
         self.btngroup1 = QButtonGroup()
         self.btngroup2 = QButtonGroup()
+        self.btngroup3 = QButtonGroup()
         self.style_lbl = QLabel("Select style")
         self.style_rdbtn1 = QRadioButton("Default")
         self.style_rdbtn1.setChecked(True)
@@ -115,11 +120,22 @@ class App(QtWidgets.QWidget):
         self.color_rdbtn_green.toggled.connect(lambda: self.edit_theme(color='green'))
         self.color_rdbtn_blue = QRadioButton("Blue")
         self.color_rdbtn_blue.toggled.connect(lambda: self.edit_theme(color='blue'))
+        self.color_rdbtn_prnt = QRadioButton("Printable")
+        self.color_rdbtn_prnt.toggled.connect(lambda: self.edit_theme(color='print'))
+        self.thickness_lbl = QLabel("Select line width")
+        self.color_rdbtn_1px = QRadioButton("1.0px")
+        self.color_rdbtn_1px.setChecked(True)
+        self.color_rdbtn_1px.toggled.connect(lambda: self.edit_theme(thickness=1))
+        self.color_rdbtn_2px = QRadioButton("2.0px")
+        self.color_rdbtn_2px.toggled.connect(lambda: self.edit_theme(thickness=2))
         self.btngroup1.addButton(self.style_rdbtn1)
         self.btngroup1.addButton(self.style_rdbtn2)
         self.btngroup2.addButton(self.color_rdbtn_red)
         self.btngroup2.addButton(self.color_rdbtn_green)
         self.btngroup2.addButton(self.color_rdbtn_blue)
+        self.btngroup2.addButton(self.color_rdbtn_prnt)
+        self.btngroup3.addButton(self.color_rdbtn_1px)
+        self.btngroup3.addButton(self.color_rdbtn_2px)
         vbox_left.addStretch(1)
         vbox_left.addWidget(self.style_lbl)
         vbox_left.addWidget(self.style_rdbtn1)
@@ -128,6 +144,10 @@ class App(QtWidgets.QWidget):
         vbox_left.addWidget(self.color_rdbtn_red)
         vbox_left.addWidget(self.color_rdbtn_green)
         vbox_left.addWidget(self.color_rdbtn_blue)
+        vbox_left.addWidget(self.color_rdbtn_prnt)
+        vbox_left.addWidget(self.thickness_lbl)
+        vbox_left.addWidget(self.color_rdbtn_1px)
+        vbox_left.addWidget(self.color_rdbtn_2px)
         vbox_left.addStretch(1)
 
         vbox_right = QVBoxLayout()

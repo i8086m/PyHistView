@@ -16,15 +16,17 @@ def gray2rgb(img: np.ndarray) -> np.ndarray:
 
 def get_color_from_name(name: str):
     if name == 'red':
-        return (0, 0, 255)
+        return 0, 0, 255
     if name == 'green':
-        return (0, 255, 0)
+        return 0, 255, 0
     if name == 'blue':
-        return (255, 0, 0)
-    return (255, 255, 255)
+        return 255, 0, 0
+    if name == 'print':
+        return 0, 0, 0
+    return 255, 255, 255
 
 
-def get_hist(gray_img: np.ndarray, hist_w: int, hist_h: int, style: str = 'default', color: str = 'red') -> np.ndarray:
+def get_hist(gray_img: np.ndarray, hist_w: int, hist_h: int, style: str = 'default', color: str = 'red', thick: int = 1) -> np.ndarray:
     hist = cv2.calcHist([gray_img], [0], None, [256], [0, 256])
     cv2.normalize(hist, hist, alpha=0, beta=hist_h, norm_type=cv2.NORM_MINMAX)
     bin_w = int(round(hist_w / 256))
@@ -32,11 +34,14 @@ def get_hist(gray_img: np.ndarray, hist_w: int, hist_h: int, style: str = 'defau
     hist_img = np.zeros((hist_h, hist_w, 3), dtype=np.uint8)
     color_tuple = get_color_from_name(color)
 
+    if color == 'print':
+        hist_img[:] = (255, 255, 255)
+
     for i in range(0, 256):
         if style == 'default':
             cv2.line(hist_img, (bin_w * (i - 1), hist_h - int(hist[i - 1])),
                      (bin_w * i, hist_h - int(hist[i])),
-                     color_tuple, thickness=1)
+                     color_tuple, thickness=int(thick))
         elif style == 'alternative':
             cv2.rectangle(hist_img, (int(i * bin_w), hist_h - int(hist[i][0])), (int(i * bin_w + bin_w - 1), hist_h),
                           color_tuple, -1)
